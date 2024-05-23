@@ -99,7 +99,7 @@ class TagsDetailSerializer(serializers.ModelSerializer):
     fields = '__all__'
 
 class TagsSerializer(serializers.ModelSerializer):
-  details = TagsDetailSerializer(source='tagsDetails', many=True)
+  details = TagsDetailSerializer
   class Meta:
     model = TagsModel
     fields = '__all__'

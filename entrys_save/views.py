@@ -124,7 +124,7 @@ class LibraryCreateView(generics.CreateAPIView):
       serializer = self.serializer_class(data=data)
       serializer.is_valid(raise_exception=True)
 
-      user = User.objects.get(id=data['user_id'])
+      user = MyUser.objects.get(id=data['user_id'])
 
       # Se   guarda la libreria
       library = LibraryModel.objects.create(
@@ -198,15 +198,14 @@ class TagsCreateView(generics.CreateAPIView):
 
       for item in data['details']:
         tagStatus = item['status_tag']
-        entrysSaved = ['entrys_saved']
         entryID = item['entry_id']
 
         entry = EntryModel.objects.get(id=entryID)
 
         tagDetail = TagsDetailModel.objects.create(
           status_tag = tagStatus,
-          entry_id = entryID,
-          entrys_saved = entrysSaved
+          entry_id = entry,
+          tag_id = tag,
         )
         tagDetail.save()
 
