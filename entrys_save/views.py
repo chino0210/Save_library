@@ -172,57 +172,57 @@ class TagsView (generics.ListAPIView):
   queryset = TagsModel.objects.all()
   serializer_class = TagsSerializer
 
-# class TagsCreateView(generics.CreateAPIView):
-#   queryset = TagsModel.objects.all()
-#   serializer_class = TagsCreateSerializer
+class TagsCreateView(generics.CreateAPIView):
+  queryset = TagsModel.objects.all()
+  serializer_class = TagsCreateSerializer
 
-#   @transaction.atomic
-#   def create(self, request, *args, **kwargs):
-#     try:
-#       data = request.data
-#       print(data)
+  @transaction.atomic
+  def create(self, request, *args, **kwargs):
+    try:
+      data = request.data
+      print(data)
 
-#       serializer = self.serializer_class(data=data)
-#       serializer.is_valid(raise_exception=True)
+      serializer = self.serializer_class(data=data)
+      serializer.is_valid(raise_exception=True)
 
-#       # entryID = EntryModel.objects.get(id=data['entry_id'])
+      # entryID = EntryModel.objects.get(id=data['entry_id'])
 
-#       # Se guarda el tag
-#       tag = TagsModel.objects.create(
-#         # name = data['tag_name'],
-#         # description = data['description']
-#         tag_name = data['tag_name'],
-#         description = data['description']
-#       )
-#       tag.save()
+      # Se guarda el tag
+      tag = TagsModel.objects.create(
+        # name = data['tag_name'],
+        # description = data['description']
+        tag_name = data['tag_name'],
+        description = data['description']
+      )
+      tag.save()
 
-#       for item in data['details']:
-#         tagStatus = item['status_tag']
-#         entrysSaved = ['entrys_saved']
-#         entryID = item['entry_id']
+      for item in data['details']:
+        tagStatus = item['status_tag']
+        entrysSaved = ['entrys_saved']
+        entryID = item['entry_id']
 
-#         entry = EntryModel.objects.get(id=entryID)
+        entry = EntryModel.objects.get(id=entryID)
 
-#         tagDetail = TagsDetailModel.objects.create(
-#           status_tag = tagStatus,
-#           entry_id = entryID,
-#           entrys_saved = entrysSaved
-#         )
-#         tagDetail.save()
+        tagDetail = TagsDetailModel.objects.create(
+          status_tag = tagStatus,
+          entry_id = entryID,
+          entrys_saved = entrysSaved
+        )
+        tagDetail.save()
 
-#       return Response({
-#         'message': 'Tag creado correctamente'
-#       }, status=status.HTTP_200_OK)
+      return Response({
+        'message': 'Tag creado correctamente'
+      }, status=status.HTTP_200_OK)
 
-#     except Exception as e:
-#       return Response({
-#         'errors': str(e)
-#       }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    except Exception as e:
+      return Response({
+        'errors': str(e)
+      }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-# class TagsUpdateView(generics.UpdateAPIView):
-#   queryset = TagsModel.objects.all()
-#   serializer_class = TagsSerializer
+class TagsUpdateView(generics.UpdateAPIView):
+  queryset = TagsModel.objects.all()
+  serializer_class = TagsSerializer
 
-# class TagsDeleteView(generics.DestroyAPIView):
-#   queryset = TagsModel
-#   serializer_class = TagsSerializer
+class TagsDeleteView(generics.DestroyAPIView):
+  queryset = TagsModel
+  serializer_class = TagsSerializer

@@ -91,29 +91,29 @@ class LibraryCreateSerializer(serializers.ModelSerializer):
     model = LibraryModel
     fields = '__all__'
 
-# # Serializadores para listar tags
+# Serializadores para listar tags
 
-# class TagsDetailSerializer(serializers.ModelSerializer):
-#   class Meta:
-#     model = TagsDetailModel
-#     fields = '__all__'
+class TagsDetailSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = TagsDetailModel
+    fields = '__all__'
 
-# class TagsSerializer(serializers.ModelSerializer):
-#   details = TagsDetailSerializer(source='tagsDetails', many=True)
-#   class Meta:
-#     model = TagsModel
-#     fields = '__all__'
+class TagsSerializer(serializers.ModelSerializer):
+  details = TagsDetailSerializer(source='tagsDetails', many=True)
+  class Meta:
+    model = TagsModel
+    fields = '__all__'
 
-# # Serializadores para crear tags
+# Serializadores para crear tags
 
-# class TagsDetailCreateSerializer(serializers.ModelSerializer):
-#   class Meta:
-#     model = TagsDetailModel
-#     exclude = ['tag_id']
+class TagsDetailCreateSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = TagsDetailModel
+    exclude = ['tag_id']
 
-# class TagsCreateSerializer(serializers.ModelSerializer):
-#   details = TagsDetailCreateSerializer(source='tagsDetails', many=True)
+class TagsCreateSerializer(serializers.ModelSerializer):
+  details = TagsDetailCreateSerializer(source='tagsDetails', many=True)
 
-#   class Meta:
-#     model = TagsModel
-#     fields = '__all__'
+  class Meta:
+    model = TagsModel
+    fields = '__all__'
