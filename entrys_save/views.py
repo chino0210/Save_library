@@ -164,6 +164,44 @@ class LibraryUpdateView(generics.UpdateAPIView):
   queryset = LibraryModel.objects.all()
   serializer_class = LibrarySerializer
 
+  def update(self, request, *args, **kwargs):
+    try:
+      data = request.data
+      # {'details': [{'status_saved': False, 'entry_id': 1, 'library_id': 7}], 'total': 3, 'user_id': 1}
+      serializer = self.serializer_class(data=data)
+      serializer.is_valid(raise_exception=True)
+
+      user = MyUser.objects.get(id=data['user_id'])
+
+      library = LibraryModel.objects.update(
+        total = data['total'],
+        user_id = user
+      )
+
+      for item in data ['details']:
+        entryID = item['entry_id']
+        entryStatus = item['status_saved']
+
+        entry = EntryModel.objects.get(id=entryID)
+        if entryStatus == False:
+          entry.times_saved -= 1
+        if entryStatus == True:
+          entry.times_saved += 1
+        entry.save()
+
+        libraryDetail = LibraryDetailModel.objects.update(
+          entry_id = entry,
+          status_saved = entryStatus,
+
+        )
+
+      return Response({
+        'message': 'Library actualizada correctamente'
+      }, status=status.HTTP_200_OK)
+    except Exception as e:
+      return Response ({
+        'errors': str(e)
+      }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 class LibraryDeleteView(generics.DestroyAPIView):
   queryset = LibraryModel.objects.all()
   serializer_class = LibrarySerializer
