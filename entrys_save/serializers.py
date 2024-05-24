@@ -91,26 +91,6 @@ class LibraryCreateSerializer(serializers.ModelSerializer):
     model = LibraryModel
     fields = '__all__'
 
-# Serializadores para crear librerias
-class LibraryDetailUpdateSerializer(serializers.ModelSerializer):
-  id = serializers.IntegerField(required=False)
-  entry_id = serializers.IntegerField(required=False)
-  status_saved = serializers.BooleanField(required=False)
-  library_id = serializers.IntegerField(required=False)
-  class Meta:
-    model = LibraryDetailModel
-    fields='__all__'
-
-class LibraryUpdateSerializer(serializers.ModelSerializer):
-  details = LibraryDetailUpdateSerializer (many=True, read_only=False)
-  id = serializers.IntegerField(required=False)
-  user_id = serializers.IntegerField(required=False)
-  total = serializers.IntegerField(required=False)
-
-  class Meta:
-    model = LibraryModel
-    fields = '__all__'
-
 # Serializadores para listar tags
 class TagsDetailSerializer(serializers.ModelSerializer):
   class Meta:

@@ -42,7 +42,6 @@ class EntryModel (models.Model):
 class LibraryModel (models.Model):
   id = models.AutoField(primary_key=True)
   user_id = models.ForeignKey(MyUser, on_delete=models.CASCADE)
-  total = models.FloatField()
 
   class Meta:
     db_table = 'library'
@@ -53,7 +52,7 @@ class LibraryModel (models.Model):
 class LibraryDetailModel (models.Model):
   id = models.AutoField(primary_key=True)
   entry_id = models.ForeignKey(EntryModel, on_delete=models.CASCADE)
-  status_saved = models.BooleanField(default=False)
+  status_saved = models.BooleanField(default=True)
   library_id = models.ForeignKey(LibraryModel, on_delete=models.CASCADE, related_name='libraryDetails')
 
   class Meta:
@@ -64,7 +63,7 @@ class LibraryDetailModel (models.Model):
 
 class TagsModel (models.Model):
   id = models.AutoField(primary_key=True)
-  tag_name = models.CharField(max_length=50)
+  tag_name = models.CharField(max_length=250)
   description = models.TextField()
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
@@ -72,7 +71,7 @@ class TagsModel (models.Model):
   class Meta:
     db_table = 'tags'
 
-  def __str__(self):
+  def __str__(self) -> str:
     return self.tag_name
 
 class TagsDetailModel (models.Model):
