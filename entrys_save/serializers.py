@@ -92,7 +92,6 @@ class LibraryCreateSerializer(serializers.ModelSerializer):
     fields = '__all__'
 
 # Serializadores para listar tags
-
 class TagsDetailSerializer(serializers.ModelSerializer):
   class Meta:
     model = TagsDetailModel
