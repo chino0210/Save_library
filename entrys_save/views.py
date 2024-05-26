@@ -11,12 +11,14 @@ from .serializers import (
   LibrarySerializer,
   LibraryDetailSerializer,
   LibraryCreateSerializer,
+  LibraryUpdateSerializer,
   # Tags
   TagsModel,
   TagsDetailModel,
   TagsSerializer,
   TagsDetailSerializer,
   TagsCreateSerializer,
+  TagsUpdateSerializer,
   # Token
   MyTokenObtainPairSerializer
 )
@@ -175,9 +177,10 @@ class LibraryCreateView(generics.CreateAPIView):
         'errors': str(e)
       }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-class LibraryUpdateView(generics.UpdateAPIView): # No sirve Xd
+class LibraryUpdateView(generics.UpdateAPIView):
   queryset = LibraryModel.objects.all()
-  serializer_class = LibrarySerializer
+  serializer_class = LibraryUpdateSerializer
+
   @transaction.atomic
   def update(self, request, *args, **kwargs):
     try:
@@ -185,39 +188,47 @@ class LibraryUpdateView(generics.UpdateAPIView): # No sirve Xd
       data = request.data
       serializer = self.serializer_class(data=data)
       serializer.is_valid(raise_exception=True)
-      # print(data) => {'details': [{'status_saved': False, 'entry_id': 1, 'library_id': 7}], 'total': 3, 'user_id': 1}
-      user_id = MyUser.objects.get(id=data['user_id'])
 
+      user_id = MyUser.objects.get(id=data['user_id'])
       existencia_library = LibraryModel.objects.filter(user_id=user_id).exists()
 
       if existencia_library:
-        user = MyUser.objects.get(id=data['user_id'])
+        status_library = data['status']
 
-        library = LibraryModel.objects.update(
-          user_id = user
-        )
+        library = LibraryModel.objects.get(id=data['user_id'])
+        library.status = status_library
+        library.save()
 
         for item in data ['details']:
           entryID = item['entry_id']
           entryStatus = item['status_saved']
-          detail_id = item['id']
+          detail_pk = item['id']
 
-          entry = EntryModel.objects.get(id=entryID)
+          try:
+            library_detail = LibraryDetailModel.objects.get(pk=detail_pk)
+            library_detail.status_saved = entryStatus
+            library_detail.save()
 
-          if entryStatus == False:
-            entry.times_saved -= 1
-          if entryStatus == True:
-            entry.times_saved += 1
-          # entry.save()
+            entry = EntryModel.objects.get(id=entryID)
+            if entryStatus == False:
+              entry.times_saved -= 1
+            if entryStatus == True:
+              entry.times_saved += 1
+            entry.save()
 
-          libraryDetail = LibraryDetailModel.objects.get(id=detail_id)
-          print(libraryDetail)
-          # libraryDetail.status_saved = entryStatus
-          # libraryDetail.save()
+          except LibraryDetailModel.DoesNotExist:
+            return Response({
+              'message': 'Detalles de la libreria inexistentes'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response({
           'message': 'Library actualizada correctamente'
         }, status=status.HTTP_200_OK)
+
+      else:
+        return Response({
+          'message': 'Libreria inexistente'
+        })
 
     except Exception as e:
       return Response ({
@@ -287,10 +298,63 @@ class TagsCreateView(generics.CreateAPIView):
         'errors': str(e)
       }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-class TagsUpdateView(generics.UpdateAPIView): # No sirve Xd
+class TagsUpdateView(generics.UpdateAPIView):
   queryset = TagsModel.objects.all()
-  serializer_class = TagsSerializer
+  serializer_class = TagsUpdateSerializer
 
+  @transaction.atomic
+  def update(self, request, *args, **kwargs):
+    try:
+
+      data = request.data
+      serializer = self.serializer_class(data=data)
+      serializer.is_valid(raise_exception=True)
+
+      tag_id = data.get('id')
+      existencia_tag = TagsModel.objects.filter(id=tag_id).exists()
+
+      if existencia_tag:
+        name_tag = data['name']
+        description_tag = data ['description']
+        status_tag = data['status']
+
+
+        tag = TagsModel.objects.get(id=tag_id)
+        tag.name = name_tag
+        tag.description = description_tag
+        tag.status = status_tag
+        tag.save()
+
+        for item in data ['details']:
+          entryStatus = item['status_saved']
+          detail_pk = item['id']
+
+          try:
+            tag_detail = TagsDetailModel.objects.get(pk=detail_pk)
+            tag_detail.status_saved = entryStatus
+            tag_detail.save()
+
+          except TagsDetailModel.DoesNotExist:
+            return Response({
+              'message': 'Detalles del Tag inexistentes'
+            })
+
+        return Response({
+            'message': 'Tag actualizada correctamente'
+        }, status=status.HTTP_200_OK)
+
+      else:
+        return Response({
+          'message': 'Tag inexistente'
+        })
+      # print (data)
+      # => {'details': [{'id': 0, 'entry_id': 0, 'status_saved': True, 'tags_id': 0}], 'name': 'string', 'description': 'string', 'status': True}
+
+
+    except Exception as e:
+      return Response ({
+        'errors': str(e)
+      }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 class TagsDetailUpdateView(generics.UpdateAPIView):
   queryset = TagsModel.objects.all()
   serializer_class = TagsDetailSerializer

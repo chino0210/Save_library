@@ -91,6 +91,24 @@ class LibraryCreateSerializer(serializers.ModelSerializer):
     model = LibraryModel
     fields = '__all__'
 
+# Serializadores para actualizar librerias
+
+class LibraryUpdateDetailSerializer(serializers.ModelSerializer):
+  id = serializers.IntegerField(required=False)
+  entry_id = serializers.IntegerField(required=False)
+  status_saved = serializers.BooleanField(required=False)
+  library_id = serializers.IntegerField(required=False)
+
+  class Meta:
+    model = LibraryDetailModel
+    fields = ['id', 'entry_id', 'status_saved', 'library_id']
+
+class LibraryUpdateSerializer(serializers.ModelSerializer):
+  details = LibraryUpdateDetailSerializer(source='libraryDetails',many=True)
+  class Meta:
+    model = LibraryModel
+    fields = '__all__'
+
 # Serializadores para listar tags
 class TagsDetailSerializer(serializers.ModelSerializer):
   class Meta:
@@ -115,3 +133,26 @@ class TagsCreateSerializer(serializers.ModelSerializer):
   class Meta:
     model = TagsModel
     fields = '__all__'
+
+# Serializadores para actualizar Tags
+
+class TagsUpdateDetailSerializer(serializers.ModelSerializer):
+  id = serializers.IntegerField(required=False)
+  entry_id = serializers.IntegerField(required=False)
+  status_saved = serializers.BooleanField(required=False)
+  tags_id = serializers.IntegerField(required=False)
+
+  class Meta:
+    model = TagsDetailModel
+    fields = ['id', 'entry_id', 'status_saved', 'tags_id']
+
+class TagsUpdateSerializer(serializers.ModelSerializer):
+  details = TagsUpdateDetailSerializer(source='tagsDetails',many=True)
+  id = serializers.IntegerField(required=False)
+  name = serializers.CharField(required=False)
+  description = serializers.CharField(required=False)
+  status = serializers.BooleanField(required=False)
+
+  class Meta:
+    model = TagsModel
+    fields = ['details', 'id', 'name', 'description', 'status']
