@@ -7,11 +7,8 @@ from .serializers import (
   LibraryModel,
   LibraryDetailModel,
   LibrarySerializer,
+  LibraryDetailSerializer,
   LibraryCreateSerializer,
-  TagsModel,
-  TagsDetailModel,
-  TagsSerializer,
-  TagsCreateSerializer,
   MyTokenObtainPairSerializer
 )
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -21,6 +18,7 @@ from pprint import pprint
 from django.contrib.auth.models import User
 from django.db import transaction
 from .models import MyUser
+from django.shortcuts import get_object_or_404
 
 # UsersViews
 class RegisterView (generics.CreateAPIView):
@@ -119,40 +117,49 @@ class LibraryCreateView(generics.CreateAPIView):
     try:
       # Recuperar la data
       data = request.data
-
+      # print (data)
+      # {'details': [{'status_saved': True, 'entry_id': 1}], 'user_id': 1}
       # Se valida el JSON q se envia
       serializer = self.serializer_class(data=data)
       serializer.is_valid(raise_exception=True)
 
       user = MyUser.objects.get(id=data['user_id'])
+      userID= user.id
 
-      # Se   guarda la libreria
-      library = LibraryModel.objects.create(
-        user_id = user,
-      )
-      library.save()
+      existencia_library = LibraryModel.objects.filter(user_id=userID).exists() # da valor True si existe la library
 
-      # Sumar +1 al total de veces guardado
-      for item in data['details']:
-        entryID = item['entry_id']
-        entryStatus = item['status_saved']
+      if existencia_library:
+        return Response({
+          'message': 'Libreria Existente'
+        })
 
-        entry = EntryModel.objects.get(id=entryID)
-        if entryStatus == True:
-          entry.times_saved += 1
-        entry.save()
-
-        # Guardamos el detalle de la libreria
-        libraryDetail = LibraryDetailModel.objects.create(
-          entry_id = entry,
-          status_saved = entryStatus,
-          library_id = library,
+      else:
+        # Se   guarda la libreria
+        library = LibraryModel.objects.create(
+            user_id = user,
         )
-        libraryDetail.save()
+        library.save()
+        # Sumar +1 al total de veces guardado
+        for item in data['details']:
+          entryID = item['entry_id']
+          entryStatus = item['status_saved']
 
-      return Response({
-        'message': 'Libreria guardada correctamente'
-      }, status=status.HTTP_200_OK)
+          entry = EntryModel.objects.get(id=entryID)
+          if entryStatus == True:
+            entry.times_saved += 1
+          entry.save()
+
+          # Guardamos el detalle de la libreria
+          libraryDetail = LibraryDetailModel.objects.create(
+            entry_id = entry,
+            status_saved = entryStatus,
+            library_id = library,
+          )
+          libraryDetail.save()
+
+        return Response({
+          'message': 'Libreria guardada correctamente'
+        }, status=status.HTTP_200_OK)
 
     except Exception as e:
       return Response({
@@ -165,99 +172,52 @@ class LibraryUpdateView(generics.UpdateAPIView):
   @transaction.atomic
   def update(self, request, *args, **kwargs):
     try:
+
       data = request.data
-      # {'details': [{'status_saved': False, 'entry_id': 1, 'library_id': 7}], 'total': 3, 'user_id': 1}
       serializer = self.serializer_class(data=data)
       serializer.is_valid(raise_exception=True)
+      # print(data) => {'details': [{'status_saved': False, 'entry_id': 1, 'library_id': 7}], 'total': 3, 'user_id': 1}
+      user_id = MyUser.objects.get(id=data['user_id'])
 
-      user = MyUser.objects.get(id=data['user_id'])
+      existencia_library = LibraryModel.objects.filter(user_id=user_id).exists()
 
-      library = LibraryModel.objects.update(
-        user_id = user
-      )
+      if existencia_library:
+        user = MyUser.objects.get(id=data['user_id'])
 
-      for item in data ['details']:
-        entryID = item['entry_id']
-        entryStatus = item['status_saved']
+        library = LibraryModel.objects.update(
+          user_id = user
+        )
 
-        entry = EntryModel.objects.get(id=entryID)
-        if entryStatus == False:
-          entry.times_saved -= 1
-        if entryStatus == True:
-          entry.times_saved += 1
-        entry.save()
+        for item in data ['details']:
+          entryID = item['entry_id']
+          entryStatus = item['status_saved']
+          detail_id = item['id']
 
-        libraryDetail = LibraryDetailModel.objects.get(id=library)
-        libraryDetail.status_saved = entryStatus
-        libraryDetail.entry_id = entry
-        libraryDetail.save()
+          entry = EntryModel.objects.get(id=entryID)
 
-      return Response({
-        'message': 'Library actualizada correctamente'
-      }, status=status.HTTP_200_OK)
+          if entryStatus == False:
+            entry.times_saved -= 1
+          if entryStatus == True:
+            entry.times_saved += 1
+          # entry.save()
+
+          libraryDetail = LibraryDetailModel.objects.get(id=detail_id)
+          print(libraryDetail)
+          # libraryDetail.status_saved = entryStatus
+          # libraryDetail.save()
+
+        return Response({
+          'message': 'Library actualizada correctamente'
+        }, status=status.HTTP_200_OK)
+
     except Exception as e:
       return Response ({
         'errors': str(e)
       }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+class LibraryDetailUpdateView(generics.UpdateAPIView):
+    queryset = LibraryDetailModel.objects.all()
+    serializer_class = LibraryDetailSerializer
 class LibraryDeleteView(generics.DestroyAPIView):
   queryset = LibraryModel.objects.all()
   serializer_class = LibrarySerializer
-
-class TagsView (generics.ListAPIView):
-  queryset = TagsModel.objects.all()
-  serializer_class = TagsSerializer
-
-class TagsCreateView(generics.CreateAPIView):
-  queryset = TagsModel.objects.all()
-  serializer_class = TagsCreateSerializer
-
-  @transaction.atomic
-  def create(self, request, *args, **kwargs):
-    try:
-      data = request.data
-      print(data)
-
-      serializer = self.serializer_class(data=data)
-      serializer.is_valid(raise_exception=True)
-
-      # entryID = EntryModel.objects.get(id=data['entry_id'])
-
-      # Se guarda el tag
-      tag = TagsModel.objects.create(
-        # name = data['tag_name'],
-        # description = data['description']
-        tag_name = data['tag_name'],
-        description = data['description']
-      )
-      tag.save()
-
-      for item in data['details']:
-        tagStatus = item['status_tag']
-        entryID = item['entry_id']
-
-        entry = EntryModel.objects.get(id=entryID)
-
-        tagDetail = TagsDetailModel.objects.create(
-          status_tag = tagStatus,
-          entry_id = entry,
-          tag_id = tag,
-        )
-        tagDetail.save()
-
-      return Response({
-        'message': 'Tag creado correctamente'
-      }, status=status.HTTP_200_OK)
-
-    except Exception as e:
-      return Response({
-        'errors': str(e)
-      }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-class TagsUpdateView(generics.UpdateAPIView):
-  queryset = TagsModel.objects.all()
-  serializer_class = TagsSerializer
-
-class TagsDeleteView(generics.DestroyAPIView):
-  queryset = TagsModel
-  serializer_class = TagsSerializer

@@ -28,7 +28,7 @@ class EntryModel (models.Model):
   autor = models.CharField(max_length=100)
   description = models.TextField()
   times_saved = models.IntegerField()
-  document = CloudinaryField("documento",resource_type="auto",)
+  document = CloudinaryField("documento",resource_type="auto")
   status = models.BooleanField(default=True)
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
@@ -59,29 +59,4 @@ class LibraryDetailModel (models.Model):
     db_table = 'library_details'
 
   def __str__(self) -> str:
-    return self.id
-
-class TagsModel (models.Model):
-  id = models.AutoField(primary_key=True)
-  tag_name = models.CharField(max_length=250)
-  description = models.TextField()
-  created_at = models.DateTimeField(auto_now_add=True)
-  updated_at = models.DateTimeField(auto_now=True)
-
-  class Meta:
-    db_table = 'tags'
-
-  def __str__(self) -> str:
-    return self.tag_name
-
-class TagsDetailModel (models.Model):
-  id = models.AutoField(primary_key=True)
-  tag_id = models.ForeignKey(TagsModel, on_delete=models.CASCADE)
-  entry_id = models.ForeignKey(EntryModel, on_delete=models.CASCADE, related_name='tagsDetails')
-  status_tag = models.BooleanField(default=True)
-
-  class Meta:
-    db_table = 'tags_details'
-
-  def __str__(self):
     return self.id
