@@ -29,7 +29,10 @@ from pprint import pprint
 from django.contrib.auth.models import User
 from django.db import transaction
 from .models import MyUser
-from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import user_passes_test
+from rest_framework.decorators import authentication_classes, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 # UsersViews
 class RegisterView (generics.CreateAPIView):
