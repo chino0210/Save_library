@@ -27,7 +27,8 @@ class EntryModel (models.Model):
   name = models.CharField(max_length=100)
   autor = models.CharField(max_length=100)
   description = models.TextField()
-  times_saved = models.IntegerField()
+  times_saved = models.IntegerField(default=0)
+  likes = models.IntegerField(default=0)
   document = CloudinaryField("documento",resource_type="auto")
   status = models.BooleanField(default=True)
   created_at = models.DateTimeField(auto_now_add=True)
@@ -42,6 +43,8 @@ class EntryModel (models.Model):
 class LibraryModel (models.Model):
   id = models.AutoField(primary_key=True)
   user_id = models.ForeignKey(MyUser, on_delete=models.CASCADE)
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)
 
   class Meta:
     db_table = 'library'
@@ -60,3 +63,29 @@ class LibraryDetailModel (models.Model):
 
   def __str__(self) -> str:
     return self.id
+
+class TagsModel (models.Model):
+  id = models.AutoField(primary_key=True)
+  name = models.CharField(max_length=100)
+  description = models.TextField()
+  status = models.BooleanField(default=True)
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)
+
+  class Meta:
+    db_table = 'tags'
+
+  def __str__(self):
+    return self.name
+
+class TagsDetailModel (models.Model):
+  id = models.AutoField(primary_key=True)
+  entry_id = models.ForeignKey(EntryModel, on_delete=models.CASCADE)
+  status_saved = models.BooleanField(default=True)
+  tags_id = models.ForeignKey(TagsModel, on_delete=models.CASCADE, related_name='tagsDetails')
+
+  class Meta:
+    db_table = 'tags_details'
+
+  def __str__(self):
+    return self.name

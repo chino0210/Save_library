@@ -1,15 +1,24 @@
 from django.urls import path
 from .views import (
+
   EntryView,
   EntryCreateView,
   EntrysUpdateView,
   EntryDeleteView,
   EntrysUploadDocumentView,
+
   LibraryView,
   LibraryCreateView,
   LibraryUpdateView,
   LibraryDetailUpdateView,
   LibraryDeleteView,
+
+  TagsView,
+  TagsCreateView,
+  TagsUpdateView,
+  TagsDetailUpdateView,
+  TagsDeleteView,
+
   RegisterView,
   LoginView,
 )
@@ -25,6 +34,11 @@ urlpatterns = [
   path ('library/update/<int:pk>', LibraryUpdateView.as_view()),
   path ('library/update/detail/<int:pk>', LibraryDetailUpdateView.as_view()),
   path ('library/delete/<int:pk>', LibraryDeleteView.as_view()),
+  path ('tags/all', TagsView.as_view()),
+  path ('tags/create', TagsCreateView.as_view()),
+  path ('tags/update/<int:pk>', TagsUpdateView.as_view()),
+  path ('tags/update/detail/<int:pk>', TagsDetailUpdateView.as_view()),
+  path ('tags/delete/<int:pk>', TagsDeleteView.as_view()),
   path ('user/register', RegisterView.as_view()),
   path ('user/login', LoginView.as_view()),
 ]

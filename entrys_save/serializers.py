@@ -3,6 +3,8 @@ from .models import (
   EntryModel,
   LibraryModel,
   LibraryDetailModel,
+  TagsModel,
+  TagsDetailModel,
   MyUser)
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -87,4 +89,29 @@ class LibraryCreateSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = LibraryModel
+    fields = '__all__'
+
+# Serializadores para listar tags
+class TagsDetailSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = TagsDetailModel
+    fields = '__all__'
+
+class TagsSerializer(serializers.ModelSerializer):
+  details = TagsDetailSerializer (source='tagsDetails', many=True)
+
+  class Meta:
+    model = TagsModel
+    fields = '__all__'
+
+# Serializadores para crear tags
+class TagsDetailCreateSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = TagsDetailModel
+    exclude = ['tags_id']
+
+class TagsCreateSerializer(serializers.ModelSerializer):
+  details = TagsDetailCreateSerializer (source='tagsDetails', many=True)
+  class Meta:
+    model = TagsModel
     fields = '__all__'

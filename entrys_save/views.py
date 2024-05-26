@@ -1,14 +1,23 @@
 from rest_framework import generics, status
 from .serializers import (
   UserCreateSerializer,
+  # Entry
   EntryModel,
   EntrySerializer,
   EntryUpdateSeliarizer,
+  #Library
   LibraryModel,
   LibraryDetailModel,
   LibrarySerializer,
   LibraryDetailSerializer,
   LibraryCreateSerializer,
+  # Tags
+  TagsModel,
+  TagsDetailModel,
+  TagsSerializer,
+  TagsDetailSerializer,
+  TagsCreateSerializer,
+  # Token
   MyTokenObtainPairSerializer
 )
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -166,7 +175,7 @@ class LibraryCreateView(generics.CreateAPIView):
         'errors': str(e)
       }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-class LibraryUpdateView(generics.UpdateAPIView):
+class LibraryUpdateView(generics.UpdateAPIView): # No sirve Xd
   queryset = LibraryModel.objects.all()
   serializer_class = LibrarySerializer
   @transaction.atomic
@@ -218,6 +227,74 @@ class LibraryUpdateView(generics.UpdateAPIView):
 class LibraryDetailUpdateView(generics.UpdateAPIView):
     queryset = LibraryDetailModel.objects.all()
     serializer_class = LibraryDetailSerializer
+
 class LibraryDeleteView(generics.DestroyAPIView):
   queryset = LibraryModel.objects.all()
   serializer_class = LibrarySerializer
+
+class TagsView(generics.ListAPIView):
+  queryset = TagsModel.objects.all()
+  serializer_class = TagsSerializer
+
+class TagsCreateView(generics.CreateAPIView):
+  queryset = TagsModel.objects.all
+  serializer_class = TagsCreateSerializer
+
+  @transaction.atomic
+  def create(self, request, *args, **kwargs):
+    try:
+
+      data = request.data # {'details': [{'status_saved': True, 'entry_id': 1}], 'name': 'string', 'description': 'string', 'status': True}
+
+      serializer = self.serializer_class(data=data)
+      serializer.is_valid(raise_exception=True)
+
+      tag_name = data.get('name')
+
+      tag_existente = TagsModel.objects.filter(name=tag_name).exists()
+
+      if tag_existente:
+        return Response({
+          'message': 'Tag Existente'
+        })
+
+      else:
+        tag = TagsModel.objects.create(
+          name = data['name'],
+          description = data['description']
+        )
+        tag.save
+
+        for item in data['details']:
+          entryID = item['entry_id']
+          entryStatus = item['status_saved']
+
+          entry = EntryModel.objects.get(id=entryID)
+
+          tagDetail = TagsDetailModel.objects.create(
+            entry_id = entry,
+            status_saved = entryStatus,
+            tags_id = tag,
+          )
+          tagDetail.save()
+
+        return Response({
+          'message': 'Tag Creado Correctamente'
+        }, status=status.HTTP_200_OK)
+
+    except Exception as e:
+      return Response({
+        'errors': str(e)
+      }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class TagsUpdateView(generics.UpdateAPIView): # No sirve Xd
+  queryset = TagsModel.objects.all()
+  serializer_class = TagsSerializer
+
+class TagsDetailUpdateView(generics.UpdateAPIView):
+  queryset = TagsModel.objects.all()
+  serializer_class = TagsDetailSerializer
+
+class TagsDeleteView(generics.DestroyAPIView):
+  queryset = TagsModel.objects.all()
+  serializer_class = TagsSerializer
