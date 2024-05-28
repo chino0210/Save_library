@@ -22,7 +22,7 @@ class MyUser(AbstractBaseUser):
   class Meta:
     db_table = 'users'
 
-  def __str__(self):
+  def __str__(self) -> str:
     return self.email
 
 class EntryModel (models.Model):
@@ -40,7 +40,7 @@ class EntryModel (models.Model):
   class Meta:
     db_table = 'entrys'
 
-  def __str__(self):
+  def __str__(self) -> str:
     return self.name
 
 class LibraryModel (models.Model):
@@ -73,6 +73,7 @@ class TagsModel (models.Model):
   name = models.CharField(max_length=100)
   description = models.TextField()
   status = models.BooleanField(default=True)
+  code_tag = models.CharField(max_length=10)
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
 
@@ -91,5 +92,5 @@ class TagsDetailModel (models.Model):
   class Meta:
     db_table = 'tags_details'
 
-  def __str__(self):
+  def __str__(self) -> str:
     return self.name
