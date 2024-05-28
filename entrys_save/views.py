@@ -208,12 +208,11 @@ class LibraryUpdateView(generics.UpdateAPIView):
 
       else:
           return Response({
-            'message': 'Libreria inexistente'
+            'message': 'Library inexistente'
           })
 
       for item in data ['details']:
         entryID = item['entry_id']
-        libraryID = item['library_id']
         statusSave = item['status_saved']
 
       library_detail = EntryModel.objects.get(id=entryID)
@@ -221,7 +220,7 @@ class LibraryUpdateView(generics.UpdateAPIView):
       existencia_detail = EntryModel.objects.filter(id=detail_id).exists()
 
       if existencia_detail:
-        detail_status = LibraryDetailModel.objects.get(entry_id=entryID, library_id=libraryID)
+        detail_status = LibraryDetailModel.objects.get(entry_id=entryID, library_id=kwargs_id)
         detail_status.status_saved = statusSave
         detail_status.save()
 
@@ -245,7 +244,7 @@ class LibraryUpdateView(generics.UpdateAPIView):
       new_detail.save()
 
       return Response({
-        'message': 'Deatail creado correctamente'
+        'message': 'Detail creado correctamente'
       }, status=status.HTTP_200_OK)
 
     except Exception as e:
@@ -342,7 +341,6 @@ class TagsUpdateView(generics.UpdateAPIView):
 
       tag_id = TagsModel.objects.get(code_tag=data['code_tag'])
       tagCODE = tag_id.code_tag
-      tagID = tag_id.id
       existencia_tag = TagsModel.objects.filter(code_tag=tagCODE).exists()
 
       if existencia_tag:
@@ -350,7 +348,7 @@ class TagsUpdateView(generics.UpdateAPIView):
         description_tag = data ['description']
         status_tag = data['status']
 
-        tag = TagsModel.objects.get(id=tagID)
+        tag = TagsModel.objects.get(id=kwargs_id)
         tag.name = name_tag
         tag.description = description_tag
         tag.status = status_tag
@@ -364,19 +362,18 @@ class TagsUpdateView(generics.UpdateAPIView):
       for item in data ['details']:
         entryID = item['entry_id']
         tagSave = item['status_saved']
-        tagID = item['tags_id']
 
       tag_detail = EntryModel.objects.get(id=entryID)
       detail_id = tag_detail.id
       existencia_detail = EntryModel.objects.filter(id=detail_id).exists()
 
       if existencia_detail:
-        detail_status = TagsDetailModel.objects.get(entry_id = entryID, tags_id=tagID)
+        detail_status = TagsDetailModel.objects.get(entry_id = entryID, tags_id=kwargs_id)
         detail_status.status_saved = tagSave
         detail_status.save()
 
       return Response({
-        'message': 'Tag actualizada correctamente'
+        'message': 'Detail editado correctamente'
       }, status=status.HTTP_200_OK)
 
     except TagsDetailModel.DoesNotExist:
