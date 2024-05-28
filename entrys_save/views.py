@@ -5,6 +5,7 @@ from .serializers import (
   EntryModel,
   EntrySerializer,
   EntryUpdateSeliarizer,
+  userSerializers,
   #Library
   LibraryModel,
   LibraryDetailModel,
@@ -30,12 +31,11 @@ from django.contrib.auth.models import User
 from django.db import transaction
 from .models import MyUser
 from django.contrib.auth.decorators import user_passes_test
-from rest_framework.decorators import authentication_classes, permission_classes
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
-import random
 
-# UsersViews
+# usersViews
 class RegisterView (generics.CreateAPIView):
   queryset = MyUser.objects.all()
   serializer_class = UserCreateSerializer
@@ -62,6 +62,10 @@ class RegisterView (generics.CreateAPIView):
 class LoginView(TokenObtainPairView):
   serializer_class = MyTokenObtainPairSerializer
 
+class usersView(generics.ListAPIView):
+  queryset = MyUser.objects.all()
+  serializer_class = userSerializers
+
 # EntrysViews
 class EntryView(generics.ListAPIView):
   queryset = EntryModel.objects.all()
@@ -74,6 +78,10 @@ class EntryCreateView(generics.CreateAPIView):
 class EntrysUpdateView(generics.UpdateAPIView):
   queryset = EntryModel.objects.all()
   serializer_class = EntryUpdateSeliarizer
+
+class EntryFilterID (generics.RetrieveAPIView):
+  queryset = EntryModel.objects.all()
+  serializer_class = EntrySerializer
 
 class EntryDeleteView(generics.DestroyAPIView):
   queryset = EntryModel.objects.all()
@@ -119,9 +127,11 @@ class EntrysUploadDocumentView (generics.GenericAPIView):
         'errors': str(e)
       }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+# LibraryViews
 class LibraryView(generics.ListAPIView):
   queryset = LibraryModel.objects.all()
   serializer_class = LibrarySerializer
+
 
 class LibraryCreateView(generics.CreateAPIView):
   queryset = LibraryModel.objects.all()
@@ -252,6 +262,10 @@ class LibraryUpdateView(generics.UpdateAPIView):
         'errors': str(e)
       }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+class LibraryFilter(generics.RetrieveAPIView):
+  queryset = LibraryModel.objects.all()
+  serializer_class = LibrarySerializer
+
 class LibraryDeleteView(generics.DestroyAPIView):
   queryset = LibraryModel.objects.all()
   serializer_class = LibrarySerializer
@@ -270,6 +284,8 @@ class LibraryDeleteView(generics.DestroyAPIView):
       return Response ({
         'errors': str(e)
     }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+# TagsViews
 
 class TagsView(generics.ListAPIView):
   queryset = TagsModel.objects.all()
@@ -392,6 +408,23 @@ class TagsUpdateView(generics.UpdateAPIView):
       return Response ({
         'errors': str(e)
       }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class TagsFilter(generics.RetrieveAPIView):
+  queryset = TagsModel.objects.all()
+  serializer_class = TagsSerializer
+  lookup_field = 'code_tag'
+
+  def get_object(self):
+    queryset = self.get_queryset()
+    code_tag = self.kwargs.get(self.lookup_field)
+
+    try:
+      return queryset.get(code_tag=code_tag)
+
+    except Exception as e:
+      return Response ({
+        'errors': str(e)
+    }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class TagsDeleteView(generics.DestroyAPIView):
   queryset = TagsModel.objects.all()

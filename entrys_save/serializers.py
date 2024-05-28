@@ -9,6 +9,11 @@ from .models import (
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 # UsersSerializer
+class userSerializers(serializers.ModelSerializer):
+  class Meta:
+    model = MyUser
+    fields = '__all__'
+
 class UserCreateSerializer (serializers.ModelSerializer):
   password = serializers.CharField(write_only=True)
 

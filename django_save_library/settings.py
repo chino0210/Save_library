@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import environ
 from dotenv import load_dotenv
 import cloudinary.uploader
 import cloudinary.api
@@ -7,6 +8,8 @@ from datetime import timedelta
 
 # Load osmentenv variables from .env file
 load_dotenv()
+env = environ.Env()
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -134,22 +137,16 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 cloudinary.config (
-  # CLOUDINARY CON .ENV / NO FUNCIONA
-    # cloud_name= 'dxhxx00ur',
-    # api_key= os.getenv('CLOUDINARY_API_KEY'),
-    # api_secret= os.getenv('CLOUDINARY_API_SECRET'),
-    # secure = True,
-
-    cloud_name= 'dxhxx00ur',
-    api_key= 399235516437445,
-    api_secret= "cc3FwwsbUVUEDcO0EbpLgyk0N38",
+    cloud_name= os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    api_key= os.environ.get('CLOUDINARY_API_KEY'),
+    api_secret= os.environ.get('CLOUDINARY_API_SECRET'),
     secure = True,
 )
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=5),
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=8),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': False,
