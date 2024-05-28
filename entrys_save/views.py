@@ -72,10 +72,12 @@ class EntryView(generics.ListAPIView):
   serializer_class = EntrySerializer
 
 class EntryCreateView(generics.CreateAPIView):
+  permission_classes = [IsAuthenticated]
   queryset = EntryModel.objects.all()
   serializer_class = EntrySerializer
 
 class EntrysUpdateView(generics.UpdateAPIView):
+  permission_classes = [IsAuthenticated]
   queryset = EntryModel.objects.all()
   serializer_class = EntryUpdateSeliarizer
 
@@ -84,6 +86,7 @@ class EntryFilterID (generics.RetrieveAPIView):
   serializer_class = EntrySerializer
 
 class EntryDeleteView(generics.DestroyAPIView):
+  permission_classes = [IsAuthenticated]
   queryset = EntryModel.objects.all()
   serializer_class = EntrySerializer
 
@@ -103,6 +106,7 @@ class EntryDeleteView(generics.DestroyAPIView):
       }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class EntrysUploadDocumentView (generics.GenericAPIView):
+  permission_classes = [IsAuthenticated]
   serializer_class = EntrySerializer
 
   def post(self, request, *args, **kwargs):
@@ -131,7 +135,6 @@ class EntrysUploadDocumentView (generics.GenericAPIView):
 class LibraryView(generics.ListAPIView):
   queryset = LibraryModel.objects.all()
   serializer_class = LibrarySerializer
-
 
 class LibraryCreateView(generics.CreateAPIView):
   queryset = LibraryModel.objects.all()
