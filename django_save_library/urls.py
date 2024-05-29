@@ -6,6 +6,9 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.views.generic import RedirectView
 
+from django.conf import settings
+from django.conf.urls.static import static
+
 schema_view = get_schema_view(
     openapi.Info(
       title="SaveLibrary API",
