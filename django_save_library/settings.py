@@ -152,4 +152,4 @@ AUTH_USER_MODEL = 'entrys_save.MyUser'
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-ALLOWED_HOSTS = ['deploy-save-library.onrender.com']
+ALLOWED_HOSTS = ['save-library.onrender.com']
