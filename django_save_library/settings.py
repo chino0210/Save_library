@@ -153,5 +153,7 @@ SIMPLE_JWT = {
     'UPDATE_LAST_LOGIN': False,
 }
 
+CORS_ORIGIN_ALLOW_ALL = True
+
 # AUTH
 AUTH_USER_MODEL = 'entrys_save.MyUser'
