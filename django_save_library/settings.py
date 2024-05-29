@@ -153,6 +153,6 @@ SIMPLE_JWT = {
 # AUTH
 AUTH_USER_MODEL = 'entrys_save.MyUser'
 
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_ALL_ORIGINS = True
 
 ALLOWED_HOSTS = ['deploy-save-library-1.onrender.com']
