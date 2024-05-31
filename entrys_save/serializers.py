@@ -154,9 +154,8 @@ class TagsUpdateSerializer(serializers.ModelSerializer):
   name = serializers.CharField(required=False)
   description = serializers.CharField(required=False)
   status = serializers.BooleanField(required=False)
-  code_tag = serializers. (required=False)
+  code_tag = serializers.CharField(required=False)
 
   class Meta:
     model = TagsModel
     fields = ['details', 'name', 'description', 'status', 'code_tag', ]
-  
