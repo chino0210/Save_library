@@ -112,7 +112,7 @@ class EntrysUploadDocumentView (generics.GenericAPIView):
       #subir el doc a cloudinary
       uploadedDocument = upload (document_file, resource_type='raw')
       documentName = uploadedDocument ['secure_url'].split('/')[-1]
-      documentPath = f'{uploadedDocument["resource_type"]}/{uploadedDocument["type"]}/v{uploadedDocument["version"]}/{uploadedDocument["type"]}/{documentName}'
+      documentPath = f'{uploadedDocument["resource_type"]}/{uploadedDocument["type"]}/v{uploadedDocument["version"]}/{documentName}'
 
       # Retornar la URL de la imagen
       return Response({
